@@ -1,0 +1,72 @@
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 6px;
+}
+
+.label-zone {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+
+  label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+
+    .required-star {
+      color: red;
+      font-size: 12px;
+      margin-left: 2px;
+    }
+  }
+
+  .error {
+    font-size: 0.78rem;
+    color: red;
+    word-break: break-word;
+  }
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.6rem;
+  min-height: 38px;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.radio-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+
+  input[type="radio"] {
+    accent-color: var(--primary-main-color);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  span {
+    user-select: none;
+  }
+}

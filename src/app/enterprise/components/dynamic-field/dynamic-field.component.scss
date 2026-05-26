@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  width: 100%;
+}
+
+.dynamic-form-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  width: 100%;
+  gap: 16px;
+
+  @media (max-width: 1700px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid-item {
+    grid-column: 1 / -1;
+
+    @media (min-width: 1700px) {
+      &[data-span] {
+        grid-column: span var(--grid-span);
+      }
+      &[data-start] {
+        grid-column-start: var(--grid-start);
+      }
+      &[data-end] {
+        grid-column-end: var(--grid-end);
+      }
+    }
+  }
+}

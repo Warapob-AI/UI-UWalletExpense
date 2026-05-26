@@ -1,0 +1,37 @@
+<div class="form-group">
+  <ng-container [formGroup]="formGroup">
+    <div class="label-zone">
+      <label>
+        {{ field.label }}
+        @if (field.validator?.required) {
+          <span class="required-star">*</span>
+        }
+      </label>
+
+      @if (
+        formGroup.get(field.field)?.invalid &&
+        formGroup.get(field.field)?.dirty
+      ) {
+        @if (formGroup.get(field.field)?.hasError('required')) {
+          <span class="error">
+            {{ field.validator?.requiredMessage ?? 'This field is required' }}
+          </span>
+        }
+      }
+    </div>
+
+    <div class="radio-group" [class.disabled]="field.disabled">
+      @for (option of field.options; track option.id) {
+        <label class="radio-option">
+          <input
+            type="radio"
+            [formControlName]="field.field"
+            [value]="option.id"
+            [disabled]="field.disabled ?? false"
+          />
+          <span>{{ option.text }}</span>
+        </label>
+      }
+    </div>
+  </ng-container>
+</div>

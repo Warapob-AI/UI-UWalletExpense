@@ -1,0 +1,53 @@
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+
+  label {
+    display: block;
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+		padding: 0.3rem 0.6rem 0.4rem 0.6rem;
+		border: 2px solid var(--border-search-color);
+		border-radius: 5px;
+		outline: none;
+
+		&:focus,
+		&:not(:placeholder-shown) {
+			border-color: var(--primary-main-color);
+		}
+
+		&:disabled {
+      background-color: #ebedef;
+      border-color: #cccccc;
+      color: #717171;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.label-zone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+
+  label {
+    display: block;
+
+    .required-star {
+      color: red;
+			font-size: 12px;
+    }
+  }
+
+  .error {
+    font-size: 0.75rem;
+    color: red;
+  }
+}

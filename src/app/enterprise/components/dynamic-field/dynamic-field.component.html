@@ -1,0 +1,30 @@
+<div class="dynamic-form-container">
+  @for (field of dynamicField; track $index) {
+    @if (!field.hide) {
+      <div class="grid-item"
+        [attr.data-span]="field.fieldColumn ?? null"
+        [attr.data-start]="field.fieldColumnStart ?? null"
+        [attr.data-end]="field.fieldColumnEnd ?? null"
+        [style.--grid-span]="field.fieldColumn"
+        [style.--grid-start]="field.fieldColumnStart"
+        [style.--grid-end]="field.fieldColumnEnd">
+
+        @if (field.type === 'logo-and-text') {
+          <app-dynamic-field-logo-and-text [field]="field" />
+        }
+        @if (field.type === 'text' || field.type === 'password') {
+          <app-dynamic-field-text [field]="field" [formGroup]="formGroup" />
+        }
+        @if (field.type === 'button') {
+          <app-dynamic-field-button [field]="field" />
+        }
+        @if (field.type === 'radio') {
+          <app-dynamic-field-radio [field]="field" [formGroup]="formGroup" />
+        }
+        @if (field.type === 'dropdown') {
+          <app-dynamic-field-dropdown [field]="field" [formGroup]="formGroup" />
+        }
+      </div>
+    }
+  }
+</div>

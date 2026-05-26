@@ -1,0 +1,30 @@
+<div class="form-group" [formGroup]="formGroup">
+  <div class="label-zone">
+    <label>
+      {{ field.label }}
+      @if (field.validator?.required) {
+        <span class="required-star">*</span>
+      }
+    </label>
+    @if (formGroup.get(field.field)?.invalid && formGroup.get(field.field)?.dirty) {
+      @if (formGroup.get(field.field)?.hasError('required')) {
+        <span class="error">{{ field.validator?.requiredMessage ?? 'This field is required' }}</span>
+      }
+      @if (formGroup.get(field.field)?.hasError('minlength')) {
+        <span class="error">{{ field.validator?.minLengthMessage ?? 'Minimum ' + field.validator?.minLength + ' characters' }}</span>
+      }
+      @if (formGroup.get(field.field)?.hasError('maxlength')) {
+        <span class="error">{{ field.validator?.maxLengthMessage ?? 'Maximum ' + field.validator?.maxLength + ' characters' }}</span>
+      }
+      @if (formGroup.get(field.field)?.hasError('email')) {
+        <span class="error">{{ field.validator?.emailMessage ?? 'Invalid email format' }}</span>
+      }
+    }
+  </div>
+<input
+  [type]="field.type"
+  [formControlName]="field.field"
+  [placeholder]="field.placeholder"
+  [attr.disabled]="field.disabled ? '' : null"
+  [attr.autocomplete]="field.type === 'password' ? 'new-password' : 'off'" />
+</div>

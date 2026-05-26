@@ -1,0 +1,23 @@
+<div class="form-group" [formGroup]="formGroup">
+  <div class="label-zone">
+    <label>
+      {{ field.label }}
+      @if (field.validator?.required) {
+        <span class="required-star">*</span>
+      }
+    </label>
+    @if (formGroup.get(field.field)?.invalid && formGroup.get(field.field)?.dirty) {
+      @if (formGroup.get(field.field)?.hasError('required')) {
+        <span class="error">{{ field.validator?.requiredMessage ?? 'This field is required' }}</span>
+      }
+    }
+  </div>
+  <select [formControlName]="field.field" [class.has-value]="formGroup.get(field.field)?.value">
+    <option value="" disabled hidden>
+      {{ isLoading ? 'Loading...' : (field.placeholder ?? 'Select...') }}
+    </option>
+    @for (option of options; track option.id) {
+      <option [value]="option.id">{{ option.text }}</option>
+    }
+  </select>
+</div>

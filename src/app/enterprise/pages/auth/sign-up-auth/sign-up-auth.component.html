@@ -1,0 +1,12 @@
+<app-background-auth>
+	<app-background-card 
+		width="25" 
+		height="55" 
+		borderRadius="20" 
+		borderWidth="3">
+		<app-dynamic-field 
+			[dynamicField]="initDynamicField"
+			(formGroupField)="formGroupField($event)">
+		</app-dynamic-field>
+	</app-background-card>
+</app-background-auth>

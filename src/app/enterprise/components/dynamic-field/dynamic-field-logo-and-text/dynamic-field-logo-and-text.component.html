@@ -1,0 +1,12 @@
+<div class="logo-zone">
+	<img 
+		[src]="field.src" 
+		[alt]="field.label" 
+		[style.width]="field.width ? field.width + '%' : 'auto'" 
+		class="logo-config" />
+	<h2 
+		class="logo-text" 
+		[style.fontWeight]="field.fontWeight ?? 400">
+		{{ field.label }}
+	</h2>
+</div>
