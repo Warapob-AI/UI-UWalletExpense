@@ -19,12 +19,20 @@
       @if (formGroup.get(field.field)?.hasError('email')) {
         <span class="error">{{ field.validator?.emailMessage ?? 'Invalid email format' }}</span>
       }
+			@if (formGroup.get(field.field)?.hasError('notANumber')) {
+				<span class="error">Please enter a valid number.</span>
+			}
+			@if (formGroup.get(field.field)?.hasError('maxDecimal')) {
+				<span class="error">Maximum {{ field.validator?.decimal }} decimal places allowed.</span>
+			}
+		
     }
   </div>
 <input
   [type]="field.type"
   [formControlName]="field.field"
   [placeholder]="field.placeholder"
+  [style.text-align]="field.align ?? 'start'"
   [attr.disabled]="field.disabled ? '' : null"
   [attr.autocomplete]="field.type === 'password' ? 'new-password' : 'off'" />
 </div>

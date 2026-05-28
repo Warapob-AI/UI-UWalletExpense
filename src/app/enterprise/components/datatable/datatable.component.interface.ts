@@ -20,7 +20,8 @@ export interface DatatableColumn {
 	options?: DatatableStatusOption[];
 	width?: number;
 	summary?: boolean;
-	summaryText?: string;
+	summaryTextLeft?: string;
+	summaryTextRight?: string;
 }
 
 export interface DatatableConfig {

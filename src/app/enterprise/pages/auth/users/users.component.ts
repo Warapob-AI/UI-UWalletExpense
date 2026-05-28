@@ -120,7 +120,6 @@ export class UsersComponent implements OnInit{
 				sortable: true,
 				separator: ' ',
 				width: 20,
-				summaryText: 'Total',
 			},
 			{
 				type: 'number',
@@ -130,7 +129,6 @@ export class UsersComponent implements OnInit{
 				decimal: 2,
 				align: 'end',
 				width: 9,
-				summary: true,
 			},
 			{
 				type: 'text',

@@ -1,0 +1,20 @@
+<app-background>
+  <app-dynamic-field
+    [dynamicField]="initDynamicField"
+    (formGroupField)="formGroupField($event)">
+  </app-dynamic-field>
+  <app-datatable
+    #dataTable
+    [config]="datatableConfig"
+    (datatableAction)="onDatatableAction($event)"
+    (clearClicked)="onClearDataTable()">
+  </app-datatable>
+</app-background>
+
+<!-- @if (modalData) {
+  <app-approve-modal
+    [data]="modalData"
+    (confirmed)="onApproveConfirmed($event)"
+    (cancelled)="onApproveCancel()">
+  </app-approve-modal>
+} -->

@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
     const token = sessionStorage.getItem('access_token');
 
     if (!token) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/']);
       return false;
     }
 
@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
 
     if (isExpired) {
       sessionStorage.clear();
-      this.router.navigate(['/login']);
+      this.router.navigate(['/']);
       return false;
     }
 
@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
     if (remainingTime <= fiveMinutesInMs) {
       alert('Token is about to expire in less than 5 minutes. Please log in again.');
       sessionStorage.clear();
-      this.router.navigate(['/login']);
+      this.router.navigate(['/']);
       return false;
     }
 
