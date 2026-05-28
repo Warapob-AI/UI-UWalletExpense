@@ -1,0 +1,45 @@
+@if (isOpen) {
+  <div class="modal__backdrop" (click)="onBackdropClick($event)">
+    <div
+      class="modal__container"
+      [style.width]="config?.width ?? '520px'"
+      (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="modal__header">
+        <span class="modal__title">{{ config?.title }}</span>
+        <button class="modal__close-btn" (click)="close()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal__body">
+        @if (config?.dynamicField?.length) {
+          <app-dynamic-field
+            [dynamicField]="config!.dynamicField!"
+            (formGroupField)="onFormGroup($event)">
+          </app-dynamic-field>
+        }
+        <ng-content />
+      </div>
+
+      <!-- Footer -->
+      @if (!config?.hideFooter) {
+        <div class="modal__footer">
+          <button class="modal__btn modal__btn--cancel" (click)="onCancel()">
+            {{ config?.cancelLabel ?? 'Cancel' }}
+          </button>
+          <button class="modal__btn modal__btn--confirm" (click)="onConfirm()">
+            {{ config?.confirmLabel ?? 'Confirm' }}
+          </button>
+        </div>
+      }
+
+    </div>
+  </div>
+}

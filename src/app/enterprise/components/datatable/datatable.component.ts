@@ -97,10 +97,6 @@ export class DatatableComponent implements OnInit, OnChanges {
 		}
 	}
 
-  public get totalPages(): number {
-    return Math.ceil(this.total / this.pageSize) || 1;
-  }
-
   public loadData(): void {
     if (!this.config?.url) return;
 
@@ -114,16 +110,21 @@ export class DatatableComponent implements OnInit, OnChanges {
       Object.assign(orderBy, this.config.orderBy);
     }
 
-    const params: any = {
-      page: this.currentPage,
-      pageSize: this.config.getAll ? undefined : this.pageSize,
-      orderBy: JSON.stringify(orderBy),
-      search: JSON.stringify(this.config.search ?? {}),
-    };
+		const params: any = {
+			orderBy: JSON.stringify(orderBy),
+			search: JSON.stringify(this.config.search ?? {}),
+		};
 
-    if (this.config.scrollLimitsRow && !this.config.getAll) {
-      params['limit'] = this.config.scrollLimitsRow;
-    }
+		if (this.config.getAll) {
+			params['getAll'] = true;
+		} else {
+			params['page'] = this.currentPage;
+			params['pageSize'] = this.pageSize;
+		}
+
+		if (this.config.scrollLimitsRow && !this.config.getAll) {
+			params['limit'] = this.config.scrollLimitsRow;
+		}
 
     this.http.post<any>(this.config.url, params).subscribe({
       next: (res) => {
@@ -160,6 +161,12 @@ export class DatatableComponent implements OnInit, OnChanges {
 		}
 
 		this.currentPage = 1;
+		this.loadData();
+	}
+
+	public goToPage(page: number): void {
+		if (page < 1 || page > this.totalPages) return;
+		this.currentPage = page;
 		this.loadData();
 	}
 
@@ -223,11 +230,10 @@ export class DatatableComponent implements OnInit, OnChanges {
     this.datatableAction.emit({ action: 'Delete', row });
   }
 
-  public goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.loadData();
-  }
+	public get totalPages(): number {
+		if (this.config?.getAll) return 1;
+		return Math.ceil(this.total / this.pageSize) || 1;
+	}
 
 	public onAddClick(): void {
 		this.addClicked.emit();
