@@ -24,7 +24,13 @@
         @if (field.type === 'dropdown') {
           <app-dynamic-field-dropdown [field]="field" [formGroup]="formGroup" />
         }
-      </div>
+				@if (field.type === 'date') {
+					<app-dynamic-field-date [field]="field" [formGroup]="formGroup" />
+				}
+				@if (field.type === 'empty') {
+					<div></div>
+				}
+		</div>
     }
   }
 </div>

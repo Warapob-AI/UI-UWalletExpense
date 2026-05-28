@@ -1,0 +1,18 @@
+<app-background>
+  <app-dynamic-field
+    [dynamicField]="initDynamicField"
+    (formGroupField)="formGroupField($event)">
+  </app-dynamic-field>
+  <app-datatable
+    #dataTable
+    [config]="datatableConfig"
+    (datatableAction)="onDatatableAction($event)">
+  </app-datatable>
+</app-background>
+
+<app-modal
+  #modal
+  [config]="modalConfig"
+  (formGroupField)="onModalFormGroup($event)"
+  (confirmed)="onModalConfirm($event)">
+</app-modal>

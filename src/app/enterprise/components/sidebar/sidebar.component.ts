@@ -40,8 +40,8 @@ export class SidebarComponent implements OnInit {
       label: 'Expense',
       permission: 'role_can_see_expense',
       children: [
-        { label: 'My Expenses', route: '/expense/my',        icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2' },
-        { label: 'Approvals',   route: '/expense/approvals', icon: 'M20 6L9 17l-5-5' },
+        { label: 'Debt Management', route: '/expense/debt-management',        icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2' },
+				{ label: 'Debt Period Management', route: '/expense/debt-period-management',        icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2' },
       ],
     },
     {
@@ -58,6 +58,14 @@ export class SidebarComponent implements OnInit {
       permission: 'role_can_see_history',
       children: [
         { label: 'Transactions', route: '/history', icon: 'M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2zm0 5v5l3 3' },
+      ],
+    },
+    {
+      id: 'approval',
+      label: 'Approval',
+      permission: 'role_can_see_history',
+      children: [
+        { label: 'Approval Debt Management',   route: '/approval/approve-debt-management', icon: 'M20 6L9 17l-5-5' },
       ],
     },
   ];

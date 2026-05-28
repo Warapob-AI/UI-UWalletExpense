@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DynamicField } from './dynamic-field.component.interface';
@@ -11,6 +11,8 @@ import { DynamicFieldRadioComponent } from './dynamic-field-radio/dynamic-field-
 import { DynamicFieldRadio } from './dynamic-field-radio/dynamic-field-radio.component.interface';
 import { DynamicFieldDropdownComponent } from './dynamic-field-dropdown/dynamic-field-dropdown.component';
 import { DynamicFieldDropdown } from './dynamic-field-dropdown/dynamic-field-dropdown.component.interface';
+import { DynamicFieldDate } from './dynamic-field-date/dynamic-field-date.component.interface';
+import { DynamicFieldDateComponent } from './dynamic-field-date/dynamic-field-date.component';
 
 @Component({
   selector: 'app-dynamic-field',
@@ -22,7 +24,8 @@ import { DynamicFieldDropdown } from './dynamic-field-dropdown/dynamic-field-dro
     DynamicFieldButtonComponent, 
     DynamicFieldLogoAndTextComponent, 
     DynamicFieldRadioComponent, 
-    DynamicFieldDropdownComponent
+    DynamicFieldDropdownComponent,
+		DynamicFieldDateComponent,
   ],
   templateUrl: './dynamic-field.component.html',
   styleUrls: ['./dynamic-field.component.scss']
@@ -33,7 +36,10 @@ export class DynamicFieldComponent implements OnInit {
 
   public formGroup!: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+		private fb: FormBuilder,
+		private cdr: ChangeDetectorRef,
+	) {}
 
   ngOnInit() {
     const controls: any = {};
@@ -68,9 +74,19 @@ export class DynamicFieldComponent implements OnInit {
         controls[f.field] = ['', validators];
       }
 
+			if (field.type === 'date') {
+				const f = field as DynamicFieldDate;
+				const validators = [];
+				if (f.validator?.required) validators.push(Validators.required);
+				controls[f.field] = [null, validators]; // ✅ ไม่ disabled FormControl
+			}
     });
 
     this.formGroup = this.fb.group(controls);
-    this.formGroupField.emit(this.formGroup);
   }
+
+	 ngAfterViewInit() {
+		this.formGroupField.emit(this.formGroup);
+		this.cdr.detectChanges();
+	 }
 }

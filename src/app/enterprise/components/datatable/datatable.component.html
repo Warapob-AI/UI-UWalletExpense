@@ -132,9 +132,13 @@
 											<span [style.text-align]="col.align ?? 'end'" style="display:block">
 												{{ getSummary(col) }}
 											</span>
-										} @else if (col.summaryText) {
+										} @else if (col.summaryTextLeft) {
+											<span style="display:block; text-align: start;">
+												{{ col.summaryTextLeft }}
+											</span>
+										} @else if (col.summaryTextRight) {
 											<span style="display:block; text-align: end;">
-												{{ col.summaryText }}
+												{{ col.summaryTextRight }}
 											</span>
 										}
 									</td>
@@ -147,6 +151,7 @@
     </table>
   </div>
 
+ @if (!config.getAll) {
   <div class="datatable__footer">
     <div class="datatable__page-info">
       <span>({{ total }} items)</span>
@@ -159,5 +164,6 @@
       <button class="datatable__page-btn" (click)="goToPage(totalPages)">»</button>
     </div>
   </div>
+}
 
 </div>
