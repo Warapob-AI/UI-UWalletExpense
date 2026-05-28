@@ -1,0 +1,215 @@
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+.label-zone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+
+  label {
+    display: block;
+    .required-star { color: red; font-size: 12px; }
+  }
+  .error { font-size: 0.75rem; color: red; }
+}
+
+// ── Input box ──────────────────────────────────────────
+.datepicker-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.datepicker-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.25rem 0.6rem;
+  border: 2px solid var(--border-search-color);
+  border-radius: 5px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s;
+  min-height: 34px;
+
+  &:hover:not(.is-disabled) { border-color: var(--primary-main-color); }
+  &.is-open                 { border-color: var(--primary-main-color); }
+  &.has-error               { border-color: #e53935; }
+	&.has-value:not(.is-disabled) { 
+    border-color: var(--primary-main-color); 
+  }
+  &.is-disabled {
+		background-color: #f8f9fa;
+		border-color: #e2e8f0;
+		border-style: solid;
+		color: #555;
+		cursor: not-allowed;
+    .datepicker-input__text { color: #717171; }
+  }
+
+  &__text {
+    font-size: 0.9rem;
+    color: #333;
+    &.placeholder { color: #aaa; }
+  }
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+    color: #888;
+    flex-shrink: 0;
+    transition: transform 0.2s, color 0.15s;
+    &.is-open {
+      transform: rotate(15deg);
+      color: var(--primary-main-color);
+    }
+  }
+}
+
+// ── Calendar ───────────────────────────────────────────
+.calendar {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 1000;
+  width: 280px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  // Header
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--primary-main-color);
+    color: #fff;
+  }
+
+  &__title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+  }
+
+  &__nav-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 26px;
+    height: 26px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    &:hover { background: rgba(255,255,255,0.2); }
+  }
+
+  // Day headers
+  &__days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 8px 8px 2px;
+    span {
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #888;
+      padding: 4px 0;
+    }
+  }
+
+  // Day grid
+  &__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 0 8px 8px;
+    gap: 2px;
+  }
+
+  &__day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    font-size: 0.82rem;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover:not(.other-month) {
+      background: rgba(var(--primary-rgb, 59,130,246), 0.1);
+      color: var(--primary-main-color);
+    }
+
+    &.other-month {
+      color: #ccc;
+      cursor: default;
+      &:hover { background: transparent; }
+    }
+
+    &.today {
+      font-weight: 700;
+      color: var(--primary-main-color);
+      border: 1.5px solid var(--primary-main-color);
+    }
+
+    &.selected {
+      background: var(--primary-main-color) !important;
+      color: #fff !important;
+      font-weight: 600;
+    }
+  }
+
+  // Footer
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  &__today-btn,
+  &__clear-btn {
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 5px;
+    transition: background 0.15s;
+  }
+
+  &__today-btn {
+    color: var(--primary-main-color);
+    font-weight: 600;
+    &:hover { background: rgba(var(--primary-rgb, 59,130,246), 0.08); }
+  }
+
+  &__clear-btn {
+    color: #e53935;
+    &:hover { background: rgba(229,57,53,0.08); }
+  }
+}

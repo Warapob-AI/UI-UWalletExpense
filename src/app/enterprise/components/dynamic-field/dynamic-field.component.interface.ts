@@ -4,7 +4,7 @@ import { DynamicFieldLogoAndText } from './dynamic-field-logo-and-text/dynamic-f
 import { DynamicFieldRadio } from './dynamic-field-radio/dynamic-field-radio.component.interface';
 import { DynamicFieldText } from './dynamic-field-text/dynamic-field-text.component.interface';
 import { DynamicFieldEmpty } from './dynamic-field-empty/dynamic-field-empty.component.interface';
-
+import { DynamicFieldDate } from './dynamic-field-date/dynamic-field-date.component.interface';
 
 /**
  * Base interface for all dynamic fields
@@ -24,4 +24,10 @@ export interface DynamicFieldBase {
   hide?: boolean;            
 }
 
-export type DynamicField = DynamicFieldLogoAndText | DynamicFieldText | DynamicFieldButton | DynamicFieldRadio | DynamicFieldDropdown | DynamicFieldEmpty;
+export type DynamicField = DynamicFieldLogoAndText | 
+DynamicFieldText | 
+DynamicFieldButton | 
+DynamicFieldRadio | 
+DynamicFieldDropdown | 
+DynamicFieldEmpty | 
+DynamicFieldDate;

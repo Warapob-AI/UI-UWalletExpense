@@ -9,6 +9,8 @@ export interface DynamicFieldValidator {
   minLengthMessage?: string;
   maxLengthMessage?: string;
   emailMessage?: string;
+	number?: boolean;
+	decimal?: number;
 }
 
 /**
@@ -35,10 +37,11 @@ export interface DynamicFieldValidator {
  * }
  */
 export interface DynamicFieldText extends DynamicFieldBase {
-  type: 'text' | 'password' ;
+  type: 'text' | 'password';
   field: string;
   label: string;
   placeholder: string;
   disabled?: boolean;
+  align?: 'start' | 'center' | 'end';
   validator?: DynamicFieldValidator;
 }

@@ -1,0 +1,88 @@
+<div class="form-group" [formGroup]="formGroup">
+
+  <div class="label-zone">
+    <label>
+      {{ field.label }}
+      @if (field.validator?.required) {
+        <span class="required-star">*</span>
+      }
+    </label>
+    @if (hasError) {
+      @if (formGroup.get(field.field)?.hasError('required')) {
+        <span class="error">{{ field.validator?.requiredMessage ?? 'This field is required' }}</span>
+      }
+    }
+  </div>
+
+  <div class="datepicker-wrapper" appClickOutside (clickOutside)="closeCalendar()">
+
+    <!-- Input display -->
+<div class="datepicker-input"
+     [class.is-open]="isOpen"
+     [class.is-disabled]="field.disabled"
+     [class.has-value]="displayValue" (click)="!field.disabled && toggleCalendar()">
+      <span class="datepicker-input__text" [class.placeholder]="!displayValue">
+        {{ displayValue }}
+      </span>
+      <svg class="datepicker-input__icon" [class.is-open]="isOpen"
+           viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+</div>
+
+    <!-- Calendar dropdown -->
+    @if (isOpen) {
+      <div class="calendar">
+
+        <!-- Header: month/year navigation -->
+        <div class="calendar__header">
+          <button class="calendar__nav-btn" type="button" (click)="prevYear()">«</button>
+          <button class="calendar__nav-btn" type="button" (click)="prevMonth()">‹</button>
+          <span class="calendar__title">
+            {{ monthNames[viewMonth] }} {{ field.dateFormat === 'BE' ? viewYear + 543 : viewYear }}
+          </span>
+          <button class="calendar__nav-btn" type="button" (click)="nextMonth()">›</button>
+          <button class="calendar__nav-btn" type="button" (click)="nextYear()">»</button>
+        </div>
+
+        <!-- Day headers -->
+        <div class="calendar__days-header">
+          @for (d of dayNames; track d) {
+            <span>{{ d }}</span>
+          }
+        </div>
+
+        <!-- Day grid -->
+        <div class="calendar__days">
+          @for (day of calendarDays; track $index) {
+            <button
+              type="button"
+              class="calendar__day"
+              [class.other-month]="day.otherMonth"
+              [class.today]="day.isToday"
+              [class.selected]="day.isSelected"
+              (click)="selectDay(day)">
+              {{ day.date }}
+            </button>
+          }
+        </div>
+
+        <!-- Quick actions -->
+        <div class="calendar__footer">
+          <button type="button" class="calendar__today-btn" (click)="selectToday()">Today</button>
+          <button type="button" class="calendar__clear-btn" (click)="clearDate()">Clear</button>
+        </div>
+
+      </div>
+    }
+
+  </div>
+
+  <!-- hidden formControl -->
+  <input type="hidden" [formControlName]="field.field" />
+
+</div>
