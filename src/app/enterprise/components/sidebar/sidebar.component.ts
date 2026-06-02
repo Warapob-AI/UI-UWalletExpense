@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { UWEBizAhRoleIdService } from '../../biz-service/UWEAuth/UWEBizAhRoleIdService';
 import { UWEBizAhRoleIdDTO } from '../../biz-dto/UWEAuth/UWEBizAhRoleIdDTO';
 import { NavGroup, LogoAndTextConfig } from './sidebar.component.interface';
+import { UnsubscriberBase } from '@components/api/unsubscribe/unsubscribe';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,7 +12,7 @@ import { NavGroup, LogoAndTextConfig } from './sidebar.component.interface';
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent extends UnsubscriberBase implements OnInit {
 
   role = signal<UWEBizAhRoleIdDTO | undefined>(undefined);
   isLoading = signal(true);
@@ -44,22 +45,30 @@ export class SidebarComponent implements OnInit {
 				{ label: 'Debt Period Management', route: '/expense/debt-period-management',        icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2' },
       ],
     },
-    {
-      id: 'report',
-      label: 'Report Message',
-      permission: 'role_can_see_report',
+		{
+      id: 'stock',
+      label: 'Stock Investment',
+      permission: 'role_can_see_expense',
       children: [
-        { label: 'Summary', route: '/report/summary', icon: 'M3 3h18v18H3zM7 17l3-4 3 3 3-5 3 3' },
+        { label: 'Stock Investment', route: '/stock/stock-investment',        icon: 'M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2' },
       ],
     },
-    {
-      id: 'history',
-      label: 'History',
-      permission: 'role_can_see_history',
-      children: [
-        { label: 'Transactions', route: '/history', icon: 'M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2zm0 5v5l3 3' },
-      ],
-    },
+    // {
+    //   id: 'report',
+    //   label: 'Report Message',
+    //   permission: 'role_can_see_report',
+    //   children: [
+    //     { label: 'Summary', route: '/report/summary', icon: 'M3 3h18v18H3zM7 17l3-4 3 3 3-5 3 3' },
+    //   ],
+    // },
+    // {
+    //   id: 'history',
+    //   label: 'History',
+    //   permission: 'role_can_see_history',
+    //   children: [
+    //     { label: 'Transactions', route: '/history', icon: 'M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2zm0 5v5l3 3' },
+    //   ],
+    // },
     {
       id: 'approval',
       label: 'Approval',
@@ -85,7 +94,9 @@ export class SidebarComponent implements OnInit {
     );
   });
 
-  constructor(private uweAhRoleIdService: UWEBizAhRoleIdService) {}
+  constructor(private uweAhRoleIdService: UWEBizAhRoleIdService) {
+    super();
+  }
 
   ngOnInit(): void {
     const roleId = sessionStorage.getItem('user_role');
@@ -103,7 +114,7 @@ export class SidebarComponent implements OnInit {
     const payload = new UWEBizAhRoleIdDTO();
     payload.role_id = roleId;
 
-    this.uweAhRoleIdService.getRoleById(payload).subscribe({
+    this.subs.sink = this.uweAhRoleIdService.getRoleById(payload).subscribe({
       next: (res: any) => {
         this.role.set(res ?? undefined);
 

@@ -9,6 +9,9 @@ import { CreateNewRoleComponent } from './enterprise/pages/auth/role/create-new-
 import { DebtManagementComponent } from './enterprise/pages/expense/debt-management/debt-management.component';
 import { CreateDebtManagementComponent } from './enterprise/pages/expense/debt-management/create-debt-management/create-debt-management.component';
 import { DebtPeriodManagementComponent } from './enterprise/pages/expense/debt-period-management/debt-period-management.component';
+import { ApproveDebtManagementComponent } from './enterprise/pages/approval/approve-debt-management/approve-debt-management.component';
+import { StockInvestmentComponent } from './enterprise/pages/stock-investment/stock-investment/stock-investment.component';
+import { CreateStockInvestmentComponent } from './enterprise/pages/stock-investment/stock-investment/create-stock-investment/create-stock-investment.component';
 
 export const routes: Routes = [
   { path: '', component: LoginAuthComponent },
@@ -25,6 +28,9 @@ export const routes: Routes = [
       { path: 'expense/debt-management', component: DebtManagementComponent },
       { path: 'expense/debt-management/create-debt-management', component: CreateDebtManagementComponent },
       { path: 'expense/debt-period-management', component: DebtPeriodManagementComponent },
+      { path: 'stock/stock-investment', component: StockInvestmentComponent },
+      { path: 'stock/stock-investment/create-stock-investment', component: CreateStockInvestmentComponent },
+      { path: 'approval/approve-debt-management', component: ApproveDebtManagementComponent },
     ]
   },
 ];

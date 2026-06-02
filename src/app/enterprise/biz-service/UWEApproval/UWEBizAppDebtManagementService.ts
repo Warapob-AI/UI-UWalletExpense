@@ -1,25 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { UWEEnv } from '../../../connection/UWEEnv';
+import { map, Observable } from 'rxjs';
+import { environment } from 'src/app/environments/environment';
+import { UWEBizAppDebtManagementDTO } from '../../biz-dto/UWEApproval/UWEBizAppDebtManagementDTO';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UWEBizAppDebtManagementService {
-  private readonly BASE: string = UWEEnv.PORT_API_UWEAPPROVAL + '/appdebt';
+  private readonly base = `${environment.PORT_API_ENTERPRISE_UWEAPPROVE}/approve-debt-period-management`;
 
-  constructor(private http: HttpClient) {}
+  public constructor(private readonly http: HttpClient) {}
 
-  public bulkInsertInstallments(body: any[]): Observable<any> {
-    return this.http.post(`${this.BASE}/bulk-insert`, body);
-  }
-
-  public selectPendingDebt(body: any): Observable<any> {
-    return this.http.post(`${this.BASE}/select-pending`, body);
-  }
-
-  public approveInstallment(body: any): Observable<any> {
-    return this.http.post(`${this.BASE}/approve`, body);
-  }
+	public insertApprove(payload: UWEBizAppDebtManagementDTO): Observable<UWEBizAppDebtManagementDTO> {
+		return this.http.post<UWEBizAppDebtManagementDTO[]>(`${this.base}/insert`, payload).pipe(
+			map(res => res[0])
+		);
+	}
 }

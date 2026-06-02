@@ -29,4 +29,8 @@ export class UWEBizExpDebtManagementService {
   public selectDebt(body: any): Observable<any> {
     return this.http.post(`${this.PORT_API_UWEEXP_DEBT}/select-debt`, body);
   }
+
+  public selectForTableDebtManagement(body: any): Observable<any> {
+    return this.http.post(`${this.PORT_API_UWEEXP_DEBT}/select-for-table-debt-management`, body);
+  }
 }

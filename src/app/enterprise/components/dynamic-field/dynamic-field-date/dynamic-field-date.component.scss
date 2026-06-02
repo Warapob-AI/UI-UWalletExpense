@@ -50,11 +50,14 @@
 		border-style: solid;
 		color: #555;
 		cursor: not-allowed;
-    .datepicker-input__text { color: #717171; }
+    .datepicker-input__text { 
+			color: #717171; 
+			 
+		}
   }
 
   &__text {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #333;
     &.placeholder { color: #aaa; }
   }

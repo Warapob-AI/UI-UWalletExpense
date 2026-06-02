@@ -27,6 +27,9 @@
 				@if (field.type === 'date') {
 					<app-dynamic-field-date [field]="field" [formGroup]="formGroup" />
 				}
+				@if (field.type === 'upload') {
+					<app-dynamic-field-upload [field]="field" [formGroup]="formGroup" />
+				}
 				@if (field.type === 'empty') {
 					<div></div>
 				}

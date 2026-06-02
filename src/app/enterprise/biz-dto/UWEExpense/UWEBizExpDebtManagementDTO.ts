@@ -20,6 +20,7 @@ export class UWEBizExpDebtManagementDTO extends UWE {
 	public static readonly DEBT_INS_PAID       = 'debt_ins_paid';
 	public static readonly DEBT_INS_TOTAL_ALL  = 'debt_ins_total_all';
 	public static readonly DEBT_USER_NAME      = 'debt_user_name';
+	public static readonly DEBT_BALANCE        = 'debt_balance';
 
   public debt_create_by?:     string;
   public debt_create_dt?:     string;
@@ -28,16 +29,17 @@ export class UWEBizExpDebtManagementDTO extends UWE {
   public debt_name?:          string;
   public debt_type?:          string;
   public debt_description?:   string;
-  public debt_principal?:     string;
-  public debt_interest_year?: string;
-  public debt_fee?:           string;
+  public debt_principal?:     number;
+  public debt_interest_year?: number;
+  public debt_fee?:           number;
   public debt_start_date?:    string;
   public debt_end_date?:      string;
   public debt_ins_total?:     string;
-  public debt_ins_amt?:       string;
+  public debt_ins_amt?:       number;
   public debt_due_date?:      string;
   public debt_status?:        string;
-  public debt_ins_paid?:      string;
-  public debt_ins_total_all?: string;
+  public debt_ins_paid?:      number;
+  public debt_ins_total_all?: number;
   public debt_user_name?:     string;
+	public debt_balance?:       number;
 }
