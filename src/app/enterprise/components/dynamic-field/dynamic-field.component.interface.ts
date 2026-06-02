@@ -5,6 +5,7 @@ import { DynamicFieldRadio } from './dynamic-field-radio/dynamic-field-radio.com
 import { DynamicFieldText } from './dynamic-field-text/dynamic-field-text.component.interface';
 import { DynamicFieldEmpty } from './dynamic-field-empty/dynamic-field-empty.component.interface';
 import { DynamicFieldDate } from './dynamic-field-date/dynamic-field-date.component.interface';
+import { DynamicFieldUpload } from './dynamic-field-upload/dynamic-field-upload.component.interface';
 
 /**
  * Base interface for all dynamic fields
@@ -17,6 +18,7 @@ import { DynamicFieldDate } from './dynamic-field-date/dynamic-field-date.compon
  */
 export interface DynamicFieldBase {
   type: string;
+	width?: number;
   field?: string;
   fieldColumn?: number;      
   fieldColumnStart?: number; 
@@ -25,9 +27,10 @@ export interface DynamicFieldBase {
 }
 
 export type DynamicField = DynamicFieldLogoAndText | 
-DynamicFieldText | 
-DynamicFieldButton | 
-DynamicFieldRadio | 
-DynamicFieldDropdown | 
-DynamicFieldEmpty | 
-DynamicFieldDate;
+	DynamicFieldText | 
+	DynamicFieldButton | 
+	DynamicFieldRadio | 
+	DynamicFieldDropdown | 
+	DynamicFieldEmpty | 
+	DynamicFieldDate |
+	DynamicFieldUpload;

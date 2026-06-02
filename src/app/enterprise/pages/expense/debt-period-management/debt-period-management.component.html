@@ -6,7 +6,8 @@
   <app-datatable
     #dataTable
     [config]="datatableConfig"
-    (datatableAction)="onDatatableAction($event)">
+    (datatableAction)="onDatatableAction($event)"
+		(clearClicked)="onClearDataTable()">
   </app-datatable>
 </app-background>
 

@@ -13,6 +13,8 @@ import { DynamicFieldDropdownComponent } from './dynamic-field-dropdown/dynamic-
 import { DynamicFieldDropdown } from './dynamic-field-dropdown/dynamic-field-dropdown.component.interface';
 import { DynamicFieldDate } from './dynamic-field-date/dynamic-field-date.component.interface';
 import { DynamicFieldDateComponent } from './dynamic-field-date/dynamic-field-date.component';
+import { DynamicFieldUploadComponent } from './dynamic-field-upload/dynamic-field-upload.component';
+import { DynamicFieldUpload } from './dynamic-field-upload/dynamic-field-upload.component.interface';
 
 @Component({
   selector: 'app-dynamic-field',
@@ -26,9 +28,10 @@ import { DynamicFieldDateComponent } from './dynamic-field-date/dynamic-field-da
     DynamicFieldRadioComponent, 
     DynamicFieldDropdownComponent,
 		DynamicFieldDateComponent,
+		DynamicFieldUploadComponent,
   ],
   templateUrl: './dynamic-field.component.html',
-  styleUrls: ['./dynamic-field.component.scss']
+  styleUrls: ['./dynamic-field.component.scss'],
 })
 export class DynamicFieldComponent implements OnInit {
   @Input() dynamicField!: DynamicField[];
@@ -78,8 +81,16 @@ export class DynamicFieldComponent implements OnInit {
 				const f = field as DynamicFieldDate;
 				const validators = [];
 				if (f.validator?.required) validators.push(Validators.required);
-				controls[f.field] = [null, validators]; // ✅ ไม่ disabled FormControl
+				controls[f.field] = [null, validators];
 			}
+
+			if (field.type === 'upload') {
+				const f = field as DynamicFieldUpload;
+				const validators = [];
+				if (f.validator?.required) validators.push(Validators.required);
+				controls[f.field] = [null, validators];
+			}
+
     });
 
     this.formGroup = this.fb.group(controls);

@@ -30,7 +30,7 @@ export class DebtManagementComponent implements OnInit {
   public formGroup!: FormGroup;
 
   // Urls
-  public urlSelectDebt: string = `${environment.PORT_API_ENTERPRISE_UWEEXPENSE}/exp-debt-management/select-debt`;
+  public urlSelectDebt: string = `${environment.PORT_API_ENTERPRISE_UWEEXPENSE}/exp-debt-management/select-for-table-debt-management`;
 
   constructor(
     private readonly redirectToService: RedirectToService,
@@ -55,14 +55,14 @@ export class DebtManagementComponent implements OnInit {
       {
         type: 'radio',
         field: UWEBizExpDebtManagementDTO.DEBT_STATUS,
-        fieldColumn: 2,
+        fieldColumn: 3,
         label: 'Status',
         options: [
-          { id: 'A', text: 'Active' },
-          { id: 'I', text: 'Inactive' },
+          { id: 'P', text: 'Pending' },
+          { id: 'C', text: 'Completed' },
           { id: '', text: 'All' },
         ],
-        defaultValue: 'A',
+        defaultValue: 'P',
       },
       {
         type: 'button',
@@ -89,7 +89,7 @@ export class DebtManagementComponent implements OnInit {
     url: this.urlSelectDebt,
     title: 'Debt Management',
     search: {
-      debt_status: 'A',
+      debt_status: 'P',
 			user_name: sessionStorage.getItem('user_name') || '',
     },
     action: [
@@ -103,14 +103,14 @@ export class DebtManagementComponent implements OnInit {
         field: UWEBizExpDebtManagementDTO.DEBT_NAME,
         label: 'Debt Name',
         sortable: true,
-        width: 9,
+        width: 10,
       },
 			{
         type: 'text',
         field: UWEBizExpDebtManagementDTO.DEBT_DESCRIPTION,
         label: 'Debt Description',
         sortable: true,
-        width: 13,
+        width: 22,
       },
       {
         type: 'text',
@@ -128,6 +128,7 @@ export class DebtManagementComponent implements OnInit {
         decimal: 2,
         align: 'end',
         width: 8,
+				summary: true,
       },
       {
         type: 'number',
@@ -167,6 +168,16 @@ export class DebtManagementComponent implements OnInit {
         width: 7,
       },
 			{
+				type: 'number',
+				field: UWEBizExpDebtManagementDTO.DEBT_BALANCE,
+				label: 'Balance',
+				sortable: true,
+				decimal: 2,
+				align: 'end',
+				width: 8,
+				summary: true,
+			},
+			{
         type: 'number',
         field: UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL_ALL,
         label: 'Amount All',
@@ -199,8 +210,8 @@ export class DebtManagementComponent implements OnInit {
         label: 'Status',
         sortable: true,
         options: [
-          { id: 'A', text: 'Active' },
-          { id: 'I', text: 'Inactive' },
+          { id: 'P', text: 'Pending' },
+          { id: 'C', text: 'Completed' },
         ],
         width: 7,
       },
@@ -259,7 +270,7 @@ export class DebtManagementComponent implements OnInit {
       search: {
 				user_name: sessionStorage.getItem('user_name') || '',
         search_value: value,
-        debt_status: this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_STATUS)?.value || 'A',
+        debt_status: this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_STATUS)?.value || 'P',
       }
     };
     if (this.dataTable) {
@@ -269,7 +280,7 @@ export class DebtManagementComponent implements OnInit {
 
   private onClear(): void {
     this.formGroup.reset();
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_STATUS)?.setValue('A');
+    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_STATUS)?.setValue('P');
   }
 
   public onAddDataTable(): void {
@@ -279,7 +290,7 @@ export class DebtManagementComponent implements OnInit {
   public onClearDataTable(): void {
     this.datatableConfig = {
       ...this.datatableConfig,
-      search: { search_value: '', debt_status: 'A', user_name: sessionStorage.getItem('user_name') || '' }
+      search: { search_value: '', debt_status: 'P', user_name: sessionStorage.getItem('user_name') || '' }
     };
     this.onClear();
     if (this.dataTable) {

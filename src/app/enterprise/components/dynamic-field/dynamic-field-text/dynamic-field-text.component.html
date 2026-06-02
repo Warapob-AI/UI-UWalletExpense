@@ -30,6 +30,7 @@
   </div>
 <input
   [type]="field.type"
+	[style.width]="field.width ? field.width + '%' : '100%'"
   [formControlName]="field.field"
   [placeholder]="field.placeholder"
   [style.text-align]="field.align ?? 'start'"
