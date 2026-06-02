@@ -21,9 +21,12 @@ import { UWEBizExpDebtPeriodManagementService } from 'src/app/enterprise/biz-ser
 export class CreateDebtManagementComponent implements OnInit {
   public initDynamicField!: DynamicField[];
   public formGroup!: FormGroup;
-  public isEditMode: boolean = false;
-  private editDebtData: any = null;
-  private hasSetInitialValues: boolean = false;
+  
+	private editDebtData: any = null;
+
+	public isEditMode: boolean = false;
+	private hasSetInitialValues: boolean = false;
+
 
   constructor(
     private readonly redirectToService: RedirectToService,
@@ -42,6 +45,7 @@ export class CreateDebtManagementComponent implements OnInit {
   ngOnInit(): void {
     this.dynamicField();
   }
+
 
   private dynamicField(): void {
     this.initDynamicField = [
@@ -79,6 +83,7 @@ export class CreateDebtManagementComponent implements OnInit {
         label: 'Principal Amount',
         placeholder: '0.00',
         align: 'end',
+				disabled: this.isEditMode,
         validator: { 
           required: true, 
           number: true,
@@ -92,6 +97,7 @@ export class CreateDebtManagementComponent implements OnInit {
         label: 'Interest Rate (%/year)',
         placeholder: '0.00',
         align: 'end',
+				disabled: this.isEditMode,
         validator: { 
           required: true, 
           number: true,
@@ -105,6 +111,7 @@ export class CreateDebtManagementComponent implements OnInit {
         label: 'Fee',
         placeholder: '0.00',
         align: 'end',
+				disabled: this.isEditMode,
         validator: { 
           number: true,
           decimal: 2
@@ -117,6 +124,7 @@ export class CreateDebtManagementComponent implements OnInit {
         label: 'Installment Amount / Month',
         placeholder: '0.00',
         align: 'end',
+				disabled: this.isEditMode,
         validator: { 
           required: true, 
           number: true,
@@ -127,6 +135,7 @@ export class CreateDebtManagementComponent implements OnInit {
         type: 'date',
         field: UWEBizExpDebtManagementDTO.DEBT_START_DATE,
         fieldColumn: 3,
+				disabled: this.isEditMode,
         label: 'Start Date',
         validator: { required: true },
       },
@@ -182,10 +191,10 @@ export class CreateDebtManagementComponent implements OnInit {
         fieldColumn: 3,
         label: 'Status',
         options: [
-          { id: 'A', text: 'Active' },
-          { id: 'I', text: 'Inactive' },
+          { id: 'P', text: 'Pending' },
+          { id: 'C', text: 'Completed' },
         ],
-        defaultValue: 'A',
+        defaultValue: 'P',
         validator: { required: true },
         disabled: !this.isEditMode,
       },
@@ -224,22 +233,22 @@ export class CreateDebtManagementComponent implements OnInit {
   }
 
   private parseDateString(val: any): Date | null {
-    if (!val) return null;
-    if (val instanceof Date) return val;
-    if (typeof val === 'string') {
-      const match = val.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if (match) {
-        return new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1]));
-      }
-      const matchIso = val.match(/^(\d{4})-(\d{2})-(\d{2})/);
-      if (matchIso) {
-        return new Date(parseInt(matchIso[1]), parseInt(matchIso[2]) - 1, parseInt(matchIso[3]));
-      }
-      const parsed = new Date(val);
-      return isNaN(parsed.getTime()) ? null : parsed;
-    }
-    return null;
-  }
+		if (!val) return null;
+		if (val instanceof Date) return val;
+		if (typeof val === 'string') {
+			const match = val.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+			if (match) {
+				return new Date(parseInt(match[3]), parseInt(match[2]) - 1, parseInt(match[1]));
+			}
+			const matchIso = val.match(/^(\d{4})-(\d{2})-(\d{2})/);
+			if (matchIso) {
+				return new Date(parseInt(matchIso[1]), parseInt(matchIso[2]) - 1, parseInt(matchIso[3]));
+			}
+			const parsed = new Date(val);
+			return isNaN(parsed.getTime()) ? null : parsed;
+		}
+		return null;
+	}
 
   private onSave(): void {
     if (this.formGroup.invalid) {
@@ -268,34 +277,24 @@ export class CreateDebtManagementComponent implements OnInit {
     };
 
     if (this.isEditMode) {
-      payload.uwe_puid       = this.editDebtData.uwe_puid;
-      payload.debt_modify_by = sessionStorage.getItem('user_name') ?? 'SYSTEM';
-      payload.debt_modify_dt = new Date().toISOString();
 
-      this.debtService.updateDebt(payload).subscribe({
+			const updatePayload: UWEBizExpDebtManagementDTO = {
+				uwe_puid: this.editDebtData.uwe_puid,
+				debt_name:          this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_NAME)?.value,
+				debt_type:          this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_TYPE)?.value,
+				debt_description:   this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_DESCRIPTION)?.value,
+				debt_modify_by:       sessionStorage.getItem('user_name') ?? 'SYSTEM',
+				debt_modify_dt:       new Date().toISOString(),
+			} as UWEBizExpDebtManagementDTO;
+
+      this.debtService.updateDebt(updatePayload).subscribe({
         next: () => {
-          const puid   = this.editDebtData.uwe_puid;
-          const n      = parseInt(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.value) || 0;
-          const insAmt = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.value;
-          const start  = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_START_DATE)?.value;
-
-          this.debtPeriodService.deleteByDebtPuid(puid).subscribe({
-            next: () => {
-              if (n > 0) {
-                const periods = this.buildDebtPeriods(puid, n, insAmt, start);
-                this.debtPeriodService.createDebtPeriod(periods).subscribe();
-              }
-              this.uweModalService.show({
-                type: 'success',
-                title: 'Success',
-                message: 'Debt updated successfully',
-                onConfirm: () => this.onDebtPage(),
-              });
-            },
-            error: () => {
-              this.uweModalService.show({ type: 'error', title: 'Error', message: 'Failed to update debt periods' });
-            }
-          });
+          this.uweModalService.show({
+						type: 'success',
+						title: 'Success',
+						message: 'Debt updated successfully',
+						onConfirm: () => this.onDebtPage(),
+					});
         },
         error: () => {
           this.uweModalService.show({ type: 'error', title: 'Error', message: 'Failed to update debt' });
@@ -338,7 +337,7 @@ export class CreateDebtManagementComponent implements OnInit {
       this.setFormValues(this.editDebtData);
     } else {
       this.formGroup.reset();
-      this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_STATUS)?.setValue('A');
+      this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_STATUS)?.setValue('P');
       this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_TYPE)?.setValue('paylater');
     }
   }
@@ -371,83 +370,97 @@ export class CreateDebtManagementComponent implements OnInit {
   }
 
   public formGroupField(formGroup: FormGroup): void {
-    this.formGroup = formGroup;
-    if (this.isEditMode && this.editDebtData && !this.hasSetInitialValues) {
-      this.setFormValues(this.editDebtData);
-      this.hasSetInitialValues = true;
-    }
+		this.formGroup = formGroup;
 
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_USER_NAME)?.setValue(
-      sessionStorage.getItem('user_name') ?? 'SYSTEM'
-    );
+		if (this.isEditMode && this.editDebtData && !this.hasSetInitialValues) {
+			this.setFormValues(this.editDebtData);
+			this.hasSetInitialValues = true;
+		}
 
-    const calcTotal = () => {
-      const amt   = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.value)   || 0;
-      const total = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.value) || 0;
-      const result = parseFloat((amt * total).toFixed(2));
-      this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL_ALL)?.setValue(
-        result, { emitEvent: false }
-      );
-    };
-    
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.valueChanges.subscribe(() => calcTotal());
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.valueChanges.subscribe(() => calcTotal());
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_USER_NAME)?.setValue(
+			sessionStorage.getItem('user_name') ?? 'SYSTEM'
+		);
 
-    const calcInstallments = () => {
-      const principal = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_PRINCIPAL)?.value) || 0;
-      const interestYear = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INTEREST_YEAR)?.value) || 0;
-      const fee = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_FEE)?.value) || 0;
-      const insAmt = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.value) || 0;
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.valueChanges.subscribe(() => this.calcTotal());
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.valueChanges.subscribe(() => this.calcTotal());
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_PRINCIPAL)?.valueChanges.subscribe(() => this.calcInstallments());
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INTEREST_YEAR)?.valueChanges.subscribe(() => this.calcInstallments());
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_FEE)?.valueChanges.subscribe(() => this.calcInstallments());
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.valueChanges.subscribe(() => this.calcInstallments());
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_START_DATE)?.valueChanges.subscribe(() => this.calcEndDate());
+	}
 
-      if (principal <= 0 || insAmt <= 0) return;
+	private calcTotal(): void {
+		const totalN1 = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.value) - 1 || 0; 
+		
+		const amt = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.value) || 0;
+		const fee = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_FEE)?.value) || 0;
+		const principal = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_PRINCIPAL)?.value) || 0;
 
-      const totalPrincipal = principal + fee;
-      let n: number;
+		const amtTotalN1 = amt * totalN1;
+		const amtTotalN1Calculate = ((principal + fee) - amtTotalN1);
+		const totalAll = parseFloat((amtTotalN1Calculate + amtTotalN1).toFixed(2));
+		
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL_ALL)?.setValue(
+			totalAll, { emitEvent: false }
+		);
+	}
 
-      if (interestYear === 0) {
-        const raw = totalPrincipal / insAmt;
-        n = (raw % 1 < 0.01) ? Math.floor(raw) : Math.ceil(raw);
-      } else {
-        const r = interestYear / 100 / 12;
-        n = Math.ceil(Math.log(insAmt / (insAmt - totalPrincipal * r)) / Math.log(1 + r));
-      }
+	private calcInstallments(): void {
+		const principal = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_PRINCIPAL)?.value) || 0;
+		const interestYear = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INTEREST_YEAR)?.value) || 0;
+		const fee = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_FEE)?.value) || 0;
+		const insAmt = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.value) || 0;
 
-      this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.setValue(
-        n, { emitEvent: false }
-      );
+		if (principal <= 0 || insAmt <= 0) return;
 
-      calcEndDate(n);
-    };
+		const totalPrincipal = principal + fee;
+		let n: number = 0;
 
-    const calcEndDate = (n?: number) => {
-      const startDateVal = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_START_DATE)?.value;
-      const total = n ?? (parseInt(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.value) || 0);
+		if (interestYear === 0) {
+			const raw = totalPrincipal / insAmt;
+			n = (raw % 1 < 0.01) ? Math.floor(raw) : Math.ceil(raw);
+		} else {
+			const r = interestYear / 100 / 12;
+			const denominator = insAmt - (totalPrincipal * r);
 
-      if (!startDateVal || total <= 0) return;
+			if (denominator > 0) {
+				const logValue = insAmt / denominator;
+				n = Math.ceil(Math.log(logValue) / Math.log(1 + r));
+			} else {
+				n = 0;
+			}
+		}
 
-      const start = this.parseDateString(startDateVal);
-      if (!start) return;
+		if (isNaN(n) || !isFinite(n)) n = 0;
 
-      const dueDay = start.getDate(); 
-      const endMonth = start.getMonth() + (total - 1);
-      const endYear = start.getFullYear() + Math.floor(endMonth / 12);
-      const endDate = new Date(endYear, endMonth % 12, dueDay);
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.setValue(n, { emitEvent: false });
+		this.calcEndDate(n);
+		this.calcTotal();
+	}
 
-      const y = endDate.getFullYear();
-      const m = String(endDate.getMonth() + 1).padStart(2, '0');
-      const d = String(endDate.getDate()).padStart(2, '0');
-      
-      this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_END_DATE)?.setValue(
-        `${y}-${m}-${d}`
-      );
-    };
+	private calcEndDate(n?: number): void {
+		const startDateVal = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_START_DATE)?.value;
+		const total = n ?? (parseInt(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.value) || 0);
 
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_PRINCIPAL)?.valueChanges.subscribe(() => calcInstallments());
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INTEREST_YEAR)?.valueChanges.subscribe(() => calcInstallments());
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_FEE)?.valueChanges.subscribe(() => calcInstallments());
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.valueChanges.subscribe(() => calcInstallments());
-    this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_START_DATE)?.valueChanges.subscribe(() => calcEndDate());
-  }
+		if (!startDateVal || total <= 0) return;
+		const start = this.parseDateString(startDateVal);
+		if (!start) return;
+
+		const targetDate = new Date(start.getTime());
+		targetDate.setMonth(targetDate.getMonth() + (total - 1));
+		
+		if (targetDate.getDate() !== start.getDate()) {
+			targetDate.setDate(0); 
+		}
+
+		const y = targetDate.getFullYear();
+		const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+		const d = String(targetDate.getDate()).padStart(2, '0');
+		
+		this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_END_DATE)?.setValue(`${y}-${m}-${d}`);
+	}
+
 
   private buildDebtPeriods(debtPuid: string, n: number, insAmt: string, startDate: string): any[] {
     const userName = sessionStorage.getItem('user_name') ?? 'SYSTEM';
@@ -462,20 +475,33 @@ export class CreateDebtManagementComponent implements OnInit {
     const debtName = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_NAME)?.value;
     const debtType = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_TYPE)?.value;
     const debtDesc = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_DESCRIPTION)?.value;
+    const debtPrincipal = this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_PRINCIPAL)?.value;
 
+		const totalN1 = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_TOTAL)?.value) - 1 || 0; 
+		
+		const amt = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_INS_AMT)?.value) || 0;
+		const fee = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_FEE)?.value) || 0;
+		const principal = parseFloat(this.formGroup.get(UWEBizExpDebtManagementDTO.DEBT_PRINCIPAL)?.value) || 0;
+
+		const amtTotalN1 = amt * totalN1;
+		const amtTotalN1Calculate = ((principal + fee) - amtTotalN1);
+
+		let insAmtNum = parseFloat(insAmt) || 0; 
     for (let i = 1; i <= n; i++) {
+			insAmtNum = insAmtNum * i; 
+			if (i === n) { 
+				insAmt = Number(amtTotalN1Calculate).toFixed(2);
+			}
+
       const month  = startObj.getMonth() + (i - 1);
       const year   = startObj.getFullYear() + Math.floor(month / 12);
       const due    = new Date(year, month % 12, dueDay);
-      const d      = String(due.getDate()).padStart(2, '0');
-      const m      = String(due.getMonth() + 1).padStart(2, '0');
-      const y      = due.getFullYear();
 
       periods.push({
         [UWEBizExpDebtPeriodManagementDTO.DEBT_PUID_MANAGEMENT]: debtPuid,
         [UWEBizExpDebtPeriodManagementDTO.DEBT_PERIOD]:          String(i),
         [UWEBizExpDebtPeriodManagementDTO.DEBT_INS_AMT]:         insAmt,
-        [UWEBizExpDebtPeriodManagementDTO.DEBT_DUE_DATE]:        `${d}/${m}/${y}`,
+        [UWEBizExpDebtPeriodManagementDTO.DEBT_DUE_DATE]:        this.toLocalISODate(due),
         [UWEBizExpDebtPeriodManagementDTO.DEBT_STATUS]:          'P',
         [UWEBizExpDebtPeriodManagementDTO.DEBT_NAME]:            debtName,
         [UWEBizExpDebtPeriodManagementDTO.DEBT_TYPE]:            debtType,
@@ -486,8 +512,16 @@ export class CreateDebtManagementComponent implements OnInit {
         [UWEBizExpDebtPeriodManagementDTO.DEBT_MODIFY_BY]:       userName,
         [UWEBizExpDebtPeriodManagementDTO.DEBT_MODIFY_DT]:       now,
       });
+			insAmtNum++;
     }
     return periods;
   }
+
+	private toLocalISODate(date: Date): string {
+		const y = date.getFullYear();
+		const m = String(date.getMonth() + 1).padStart(2, '0');
+		const d = String(date.getDate()).padStart(2, '0');
+		return `${y}-${m}-${d}T00:00:00`;
+	}
 
 }

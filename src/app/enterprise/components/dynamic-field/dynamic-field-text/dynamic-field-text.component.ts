@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UnsubscriberBase } from '@components/api/unsubscribe/unsubscribe';
 
 @Component({
   selector: 'app-dynamic-field-text',
@@ -9,7 +10,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './dynamic-field-text.component.html',
   styleUrls: ['./dynamic-field-text.component.scss']
 })
-export class DynamicFieldTextComponent implements OnInit {
+export class DynamicFieldTextComponent extends UnsubscriberBase implements OnInit {
   @Input() field!: any;
   @Input() formGroup!: FormGroup;
 
@@ -22,7 +23,7 @@ export class DynamicFieldTextComponent implements OnInit {
 				control.addValidators(this.decimalLengthValidator(maxDecimal));
 				control.updateValueAndValidity({ emitEvent: false });
 
-				control.valueChanges.subscribe(val => {
+				this.subs.sink = control.valueChanges.subscribe(val => {
 					if (val === null || val === undefined || val === '') return;
 					const str = String(val);
 					if (str.includes('.')) {

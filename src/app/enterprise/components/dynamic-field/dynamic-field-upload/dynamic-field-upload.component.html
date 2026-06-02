@@ -1,0 +1,66 @@
+<div class="form-group" [formGroup]="formGroup">
+  <div class="label-zone">
+    <label>
+      {{ field.label }}
+      @if (field.validator?.required) {
+        <span class="required-star">*</span>
+      }
+    </label>
+    @if (formGroup.get(field.field)?.invalid && formGroup.get(field.field)?.dirty) {
+      @if (formGroup.get(field.field)?.hasError('required')) {
+        <span class="error">{{ field.validator?.requiredMessage ?? 'This field is required' }}</span>
+      }
+      @if (formGroup.get(field.field)?.hasError('invalidType')) {
+        <span class="error">Allowed: {{ acceptLabel }}</span>
+      }
+    }
+  </div>
+
+  <div
+    class="upload-area"
+    [class.upload-area--disabled]="field.disabled"
+    [class.upload-area--has-file]="previewUrl"
+    (click)="onAreaClick()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)"
+    [class.upload-area--dragover]="isDragOver">
+
+    <input
+      #fileInput
+      type="file"
+      [accept]="acceptAttr"
+      [disabled]="!!field.disabled"
+      (change)="onFileChange($event)"
+      class="upload-area__input" />
+
+    @if (previewUrl) {
+      <div class="upload-area__preview">
+        <img [src]="previewUrl" class="upload-area__preview-img" alt="preview" />
+        <button
+          type="button"
+          class="upload-area__remove-btn"
+          [disabled]="!!field.disabled"
+          (click)="onRemove($event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    } @else {
+      <div class="upload-area__placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+             class="upload-area__icon">
+          <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span class="upload-area__hint">Click or drag image here</span>
+        <span class="upload-area__ext">{{ acceptLabel }}</span>
+      </div>
+    }
+  </div>
+</div>

@@ -4,6 +4,7 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { SidebarComponent } from './enterprise/components/sidebar/sidebar.component';
 import { NavigationComponent } from './enterprise/components/navigation/navigation.component';
+import { UnsubscriberBase } from '@components/api/unsubscribe/unsubscribe';
 
 @Component({
   selector: 'app-root',
@@ -11,19 +12,21 @@ import { NavigationComponent } from './enterprise/components/navigation/navigati
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App implements OnInit {
+export class App extends UnsubscriberBase implements OnInit {
   currentPageName: string = '';
 
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) {
+		super();
+	}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.setPageName(this.router.url);
 
-      this.router.events.pipe(
+      this.subs.sink = this.router.events.pipe(
         filter(e => e instanceof NavigationEnd)
       ).subscribe((e: any) => {
         this.setPageName(e.url);

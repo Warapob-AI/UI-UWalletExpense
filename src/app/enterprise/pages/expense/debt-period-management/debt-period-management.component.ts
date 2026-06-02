@@ -12,6 +12,7 @@ import { UWEBizExpDebtPeriodManagementService } from 'src/app/enterprise/biz-ser
 import { environment } from 'src/app/environments/environment';
 import { ModalComponent } from '@components/modal/modal.component';
 import { ModalConfig } from '@components/modal/modal.component.interface';
+import { RedirectToService } from 'src/app/enterprise/biz-service/UWERedirectToService';
 
 @Component({
   selector: 'app-debt-period-management',
@@ -34,6 +35,7 @@ export class DebtPeriodManagementComponent implements OnInit {
   public urlSelectDebt: string = `${environment.PORT_API_ENTERPRISE_UWEEXPENSE}/exp-debt-period-management/select-debt-period`;
 
   constructor(
+    private readonly redirectToService: RedirectToService,
     private readonly uweModalService: UWEModalService,
     private readonly debtService: UWEBizExpDebtManagementService,
     private readonly debtPeriodService: UWEBizExpDebtPeriodManagementService,
@@ -52,6 +54,18 @@ export class DebtPeriodManagementComponent implements OnInit {
         label: 'Search Value',
         placeholder: 'Debt name / Description',
       },
+			{
+				type: 'date',
+				field: UWEBizExpDebtPeriodManagementDTO.DEBT_DATE_FROM,
+				fieldColumn: 2,
+				label: 'Debt Date From',
+			},
+			{
+				type: 'date',
+				field: UWEBizExpDebtPeriodManagementDTO.DEBT_DATE_TO,
+				fieldColumn: 2,
+				label: 'Debt Date To',
+			},
       {
         type: 'radio',
         field: UWEBizExpDebtPeriodManagementDTO.DEBT_STATUS,
@@ -60,10 +74,9 @@ export class DebtPeriodManagementComponent implements OnInit {
         options: [
           { id: 'P', text: 'Pending' },
           { id: 'C', text: 'Completed' },
-          { id: 'O', text: 'Overdue' },
-          { id: '', text: 'All' },
+          { id: 'All', text: 'All' },
         ],
-        defaultValue: 'A',
+        defaultValue: 'P',
       },
       {
         type: 'button',
@@ -86,8 +99,6 @@ export class DebtPeriodManagementComponent implements OnInit {
     ];
   }
 
-  // ─── Datatable ───────────────────────────────────────────
-
   datatableConfig: DatatableConfig = {
     url: this.urlSelectDebt,
     title: 'Debt Period Management',
@@ -97,15 +108,20 @@ export class DebtPeriodManagementComponent implements OnInit {
     },
     action: [
       { type: 'Edit' },
-      { type: 'Delete' },
     ],
+		disabledRow: (row: any) => {
+			return {
+				edit: row[UWEBizExpDebtPeriodManagementDTO.DEBT_STATUS] === 'C',
+				
+			};
+		},
     columns: [
       { type: 'action', width: 100 },
       { type: 'text', field: UWEBizExpDebtPeriodManagementDTO.DEBT_NAME, label: 'Debt Name', sortable: true, width: 20 },
-      { type: 'text', field: ['', UWEBizExpDebtPeriodManagementDTO.DEBT_PERIOD], label: 'Debt Period', sortable: true, width: 9, separator: 'งวดที่ ' },
-      { type: 'text', field: UWEBizExpDebtPeriodManagementDTO.DEBT_DUE_DATE, label: 'Debt Due Date', sortable: true, width: 9 },
-      { type: 'text', field: UWEBizExpDebtPeriodManagementDTO.DEBT_TYPE, label: 'Type', sortable: true, width: 7, summaryTextRight: 'Total' },
-      { type: 'text', field: UWEBizExpDebtPeriodManagementDTO.DEBT_DESCRIPTION, label: 'Debt Description', sortable: true, width: 25 },
+      { type: 'text', field: UWEBizExpDebtPeriodManagementDTO.DEBT_PERIOD, label: 'Debt Period', sortable: true, width: 9 },
+      { type: 'date', field: UWEBizExpDebtPeriodManagementDTO.DEBT_DUE_DATE, label: 'Debt Due Date', sortable: true, width: 9 },
+      { type: 'text', field: UWEBizExpDebtPeriodManagementDTO.DEBT_TYPE, label: 'Type', sortable: true, width: 7, },
+      { type: 'text', field: UWEBizExpDebtPeriodManagementDTO.DEBT_DESCRIPTION, label: 'Debt Description', sortable: true, width: 25,  summaryTextRight: 'Total'},
       { type: 'number', field: UWEBizExpDebtPeriodManagementDTO.DEBT_INS_AMT, label: 'Amount', sortable: true, decimal: 2, align: 'end', width: 15, summary: true },
       {
         type: 'status',
@@ -118,9 +134,10 @@ export class DebtPeriodManagementComponent implements OnInit {
           { id: 'O', text: 'Overdue' },
         ],
         width: 15,
+				summaryTextLeft: 'Baht'
       },
     ],
-    orderBy: { debt_start_date: 'asc' },
+    orderBy: { debt_period: 'asc' },
   };
 
   public onDatatableAction(event: DatatableActionEvent): void {
@@ -164,48 +181,46 @@ export class DebtPeriodManagementComponent implements OnInit {
     });
   }
 
-  // ─── Search form ─────────────────────────────────────────
-
   public formGroupField(formGroup: FormGroup): void {
     this.searchFormGroup = formGroup;
   }
 
-  public onSearch(): void {
+	public onSearch(): void {
     this.datatableConfig = {
-      ...this.datatableConfig,
-      search: {
-        user_name: sessionStorage.getItem('user_name') || '',
-        search_value: this.searchFormGroup.get('search_value')?.value,
-        debt_status: this.searchFormGroup.get(UWEBizExpDebtPeriodManagementDTO.DEBT_STATUS)?.value || 'A',
-      }
+        ...this.datatableConfig,
+        search: {
+					user_name:     sessionStorage.getItem('user_name') || '',
+					search_value:  this.searchFormGroup.get('search_value')?.value,
+					debt_status:   this.searchFormGroup.get(UWEBizExpDebtPeriodManagementDTO.DEBT_STATUS)?.value || 'All',
+					debt_date_from: this.searchFormGroup.get(UWEBizExpDebtPeriodManagementDTO.DEBT_DATE_FROM)?.value || null,
+					debt_date_to: this.searchFormGroup.get(UWEBizExpDebtPeriodManagementDTO.DEBT_DATE_TO)?.value || null,
+        }
     };
     this.dataTable?.refresh();
-  }
+	}
 
   private onClear(): void {
     this.searchFormGroup.reset();
-    this.searchFormGroup.get(UWEBizExpDebtPeriodManagementDTO.DEBT_STATUS)?.setValue('A');
+    this.searchFormGroup.get(UWEBizExpDebtPeriodManagementDTO.DEBT_STATUS)?.setValue('P');
   }
 
   public onAddDataTable(): void {
-    // TODO: เปิด modal สร้างใหม่ หรือ redirect
+    this.redirectToService.to('/expense/debt-management/create-debt-management');
   }
 
   public onClearDataTable(): void {
     this.datatableConfig = {
       ...this.datatableConfig,
-      search: { search_value: '', debt_status: 'A', user_name: sessionStorage.getItem('user_name') || '' }
+      search: { search_value: '', debt_status: 'P', user_name: sessionStorage.getItem('user_name') || '' }
     };
     this.onClear();
     this.dataTable?.refresh();
   }
 
-  // ─── Modal ───────────────────────────────────────────────
-
 	modalConfig: ModalConfig = {
 		title: 'Edit Information',
 		width: '600px',
-		hideFooter: true,  // ซ่อน footer เดิม
+		hideFooter: true,
 		dynamicField: [
 			{
 				type: 'text',
@@ -214,38 +229,79 @@ export class DebtPeriodManagementComponent implements OnInit {
 				placeholder: 'Enter amount',
 			},
 			{
-				type: 'button',
-				fieldColumn: 1,
-				label: 'Cancel',
-				variant: 'clear',
-				icon: 'clear',
-				width: 100,
-				onClick: () => this.modal.close(),
+				type: 'empty',
+				fieldColumn: 10,
 			},
 			{
 				type: 'button',
+				fieldColumn: 1,
 				label: 'Save',
-				variant: 'search',
-				icon: 'search',
-				width: 100,
-				onClick: () => this.onModalConfirm(this.modalFormGroup), // ← เปลี่ยนจาก searchFormGroup
+				positionX: 'end',
+				variant: 'save',
+				icon: 'save',
+				onClick: () => this.onModalConfirm(this.modalFormGroup),
+			},
+			{
+				type: 'button',
+				fieldColumn: 1,
+				label: 'Cancel',
+				positionX: 'end',
+				variant: 'clear',
+				icon: 'clear',
+				onClick: () => this.modal.close(),
 			},
 		],
 	};
 
 	public onModalFormGroup(formGroup: FormGroup): void {
-		this.modalFormGroup = formGroup;  // เก็บไว้ก่อน
+		this.modalFormGroup = formGroup;
 		if (this.selectedRow) {
 			formGroup.patchValue({
 				[UWEBizExpDebtPeriodManagementDTO.DEBT_INS_AMT]: this.selectedRow[UWEBizExpDebtPeriodManagementDTO.DEBT_INS_AMT],
 			});
 		}
 	}
-  public onModalConfirm(formGroup: FormGroup | null): void {
-    if (!formGroup?.valid) return;
-    console.log('save', formGroup.value, 'row', this.selectedRow);
-    // TODO: call API save แล้ว this.dataTable.refresh()
-  }
+
+	public onModalConfirm(formGroup: FormGroup | null): void {
+		if (!formGroup?.valid) return;
+
+		const updatedAmt = formGroup.get(UWEBizExpDebtPeriodManagementDTO.DEBT_INS_AMT)?.value;
+		const rawDate = this.selectedRow[UWEBizExpDebtPeriodManagementDTO.DEBT_DUE_DATE];
+
+		const normalizeDate = (val: string): string => {
+			const d = new Date(val);
+			const y = d.getFullYear();
+			const m = String(d.getMonth() + 1).padStart(2, '0');
+			const day = String(d.getDate()).padStart(2, '0');
+			return `${y}-${m}-${day}T00:00:00`;
+		};
+
+		const payload: any = {
+			...this.selectedRow,
+			debt_ins_amt: Number(updatedAmt),
+			debt_due_date: rawDate ? normalizeDate(rawDate) : this.selectedRow[UWEBizExpDebtPeriodManagementDTO.DEBT_DUE_DATE],
+		};
+
+		this.debtPeriodService.updateDebtPeriod(payload).subscribe({
+			next: () => {
+				this.uweModalService.show({
+					type: 'success',
+					title: 'Success',
+					message: 'Data updated successfully.',
+					confirmButtonText: 'Ok',
+				});
+				this.modal.close();
+				this.dataTable.refresh();
+			},
+			error: () => {
+				this.uweModalService.show({
+					type: 'error',
+					title: 'Error',
+					message: 'Failed to update transaction.'
+				});
+			}
+		});
+	}
 
 	public onFormGroup(formGroup: FormGroup): void {
 	}

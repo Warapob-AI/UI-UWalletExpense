@@ -25,7 +25,6 @@
     <table class="datatable__table">
       <thead>
         <tr>
-          <!-- Action header — แสดงเฉพาะเมื่อมี config.action -->
           @if (hasActions) {
             <th class="datatable__th datatable__th--action"
                 [style.width.px]="actionColumnWidth"
@@ -36,7 +35,6 @@
 
           @for (col of config.columns; track col.field) {
             @if (col.type === 'action') {
-              <!-- ข้าม type action ใน columns (ใช้ config.action แทน) -->
             } @else {
               <th class="datatable__th"
                 [class.sortable]="col.sortable"
@@ -72,10 +70,22 @@
           @for (row of data; track $index) {
             <tr class="datatable__row">
 
-              <!-- Action cell -->
               @if (hasActions) {
                 <td class="datatable__td datatable__td--action">
                   <div class="datatable__action-wrap">
+										@if (hasAction('View')) {
+											<button
+												class="datatable__icon-btn datatable__icon-btn--view"
+												[class.datatable__icon-btn--disabled]="config.disabledRow?.(row)?.view"
+												[disabled]="config.disabledRow?.(row)?.view"
+												(click)="onView(row)">
+												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+														stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+													<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+													<circle cx="12" cy="12" r="3"/>
+												</svg>
+											</button>
+										}
                     @if (hasAction('Edit')) {
                       <button
                         class="datatable__icon-btn datatable__icon-btn--edit"
@@ -104,6 +114,19 @@
                         </svg>
                       </button>
                     }
+										@if (hasAction('Approve')) {
+											<button
+												class="datatable__icon-btn datatable__icon-btn--approve"
+												[class.datatable__icon-btn--disabled]="config.disabledRow?.(row)?.approve"
+												[disabled]="config.disabledRow?.(row)?.approve"
+												(click)="onApprove(row)">
+												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+														stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+													<circle cx="12" cy="12" r="10"/>
+													<polyline points="9 12 11 14 15 10"/>
+												</svg>
+											</button>
+										}
                   </div>
                 </td>
               }

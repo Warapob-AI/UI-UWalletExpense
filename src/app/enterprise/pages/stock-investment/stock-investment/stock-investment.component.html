@@ -7,13 +7,7 @@
     #dataTable
     [config]="datatableConfig"
     (datatableAction)="onDatatableAction($event)"
-		(clearClicked)="onClearDataTable()">
+    (addClicked)="onAddDataTable()"
+    (clearClicked)="onClearDataTable()">
   </app-datatable>
 </app-background>
-
-<app-modal
-  #modal
-  [config]="modalConfig"
-  (formGroupField)="onModalFormGroup($event)"
-  (confirmed)="onModalConfirm($event)">
-</app-modal>
