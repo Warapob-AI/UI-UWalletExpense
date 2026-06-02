@@ -3,6 +3,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ClickOutsideDirective } from './click.outside.directive.component';
 import { DynamicFieldDate } from './dynamic-field-date.component.interface';
+import { UnsubscriberBase } from '@components/api/unsubscribe/unsubscribe';
 
 export interface CalendarDay {
   date: number;
@@ -19,7 +20,7 @@ export interface CalendarDay {
   templateUrl: './dynamic-field-date.component.html',
   styleUrls: ['./dynamic-field-date.component.scss']
 })
-export class DynamicFieldDateComponent implements OnInit {
+export class DynamicFieldDateComponent extends UnsubscriberBase implements OnInit {
   @Input() field!: DynamicFieldDate;
   @Input() formGroup!: FormGroup;
 
@@ -46,7 +47,9 @@ export class DynamicFieldDateComponent implements OnInit {
   ];
   public readonly dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
-	constructor(private cdr: ChangeDetectorRef) {}
+	constructor(private cdr: ChangeDetectorRef) {
+		super();
+	}
 	 
   ngOnInit(): void {
 		const control = this.formGroup.get(this.field.field);
@@ -55,7 +58,7 @@ export class DynamicFieldDateComponent implements OnInit {
 			this.setSelectedDate(new Date(control.value));
 		}
 
-		this.formGroup.statusChanges.subscribe(() => {
+		this.subs.sink = this.formGroup.statusChanges.subscribe(() => {
 			const val = control?.value;
 			if (val) {
 				const d = new Date(val);
@@ -69,7 +72,7 @@ export class DynamicFieldDateComponent implements OnInit {
 			}
 		});
 
-		control?.valueChanges.subscribe(val => {
+		this.subs.sink = control?.valueChanges.subscribe(val => {
 			if (val) {
 				this.setSelectedDate(new Date(val));
 			} else {

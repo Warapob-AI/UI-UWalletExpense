@@ -14,7 +14,13 @@ export class UWEBizExpDebtPeriodManagementDTO extends UWE {
   public static readonly DEBT_STATUS          = 'debt_status';
 	public static readonly DEBT_USER_NAME       = 'debt_user_name';
 	public static readonly DEBT_PUID_MANAGEMENT = 'debt_puid_management';
+	public static readonly DEBT_PUID_APPROVE    = 'debt_puid_approve';
+	public static readonly DEBT_PUID_IO_FILE	  = 'debt_puid_io_file';
 
+	// No SQL field, only for UI display
+	public static readonly DEBT_DATE_FROM = 'debt_date_from';
+	public static readonly DEBT_DATE_TO = 'debt_date_to';
+	
   public debt_create_by?:       string;
   public debt_create_dt?:       string;
   public debt_modify_by?:       string;
@@ -28,4 +34,6 @@ export class UWEBizExpDebtPeriodManagementDTO extends UWE {
   public debt_status?:          string;
   public debt_user_name?:       string;
   public debt_puid_management?: string;
+  public debt_puid_approve?:    string;
+  public debt_puid_io_file?:    string;
 }

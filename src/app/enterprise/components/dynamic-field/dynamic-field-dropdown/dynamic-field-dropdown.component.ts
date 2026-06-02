@@ -3,6 +3,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { DynamicFieldDropdown } from './dynamic-field-dropdown.component.interface';
+import { UnsubscriberBase } from '@components/api/unsubscribe/unsubscribe';
 
 @Component({
   selector: 'app-dynamic-field-dropdown',
@@ -11,7 +12,7 @@ import { DynamicFieldDropdown } from './dynamic-field-dropdown.component.interfa
   templateUrl: './dynamic-field-dropdown.component.html',
   styleUrls: ['./dynamic-field-dropdown.component.scss']
 })
-export class DynamicFieldDropdownComponent implements OnInit {
+export class DynamicFieldDropdownComponent extends UnsubscriberBase implements OnInit {
   @Input() field!: DynamicFieldDropdown;
   @Input() formGroup!: FormGroup;
 
@@ -21,7 +22,9 @@ export class DynamicFieldDropdownComponent implements OnInit {
   constructor(
 		private http: HttpClient,
 		private cdr: ChangeDetectorRef,
-	) {}
+	) {
+		super();
+	}
 
   public ngOnInit(): void {
     if (this.field.options?.length) {
@@ -43,7 +46,7 @@ export class DynamicFieldDropdownComponent implements OnInit {
       search: JSON.stringify(this.field.search ?? {}),
     };
 
-    this.http.post<any>(this.field.url, params).subscribe({
+    this.subs.sink = this.http.post<any>(this.field.url, params).subscribe({
       next: (res) => {
 				const rows = Array.isArray(res) ? res : res.data;
 				this.options = rows.map((row: any) => ({

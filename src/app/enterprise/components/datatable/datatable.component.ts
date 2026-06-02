@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { DatatableConfig, DatatableActionEvent, DatatableColumn } from './datatable.component.interface';
 import { Subscription } from 'rxjs';
+import { UnsubscriberBase } from '@components/api/unsubscribe/unsubscribe';
 
 @Component({
   selector: 'app-datatable',
@@ -11,7 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './datatable.component.html',
   styleUrl: './datatable.component.scss',
 })
-export class DatatableComponent implements OnInit, OnChanges {
+export class DatatableComponent extends UnsubscriberBase implements OnInit, OnChanges {
 	// Input
   @Input() config!: DatatableConfig;
 
@@ -21,7 +22,6 @@ export class DatatableComponent implements OnInit, OnChanges {
 	@Output() clearClicked = new EventEmitter<void>();
 
 	// Property
-	private subscription?: Subscription;
   public data: any[] = [];
   public total: number = 0;
 	// Boolean
@@ -38,23 +38,23 @@ export class DatatableComponent implements OnInit, OnChanges {
   constructor(
 		private http: HttpClient,
 		private cdr: ChangeDetectorRef
-	) {}
+	) {
+		super();
+	}
 
 	// Action helpers
 	get hasActions(): boolean {
 		return !!this.config?.action?.length;
 	}
 
-	hasAction(type: 'Edit' | 'Delete'): boolean {
+	hasAction(type: 'Edit' | 'Delete' | 'Approve' | 'View'): boolean {
 		return this.config?.action?.some(a => a.type === type) ?? false;
 	}
 
 	get actionColumnWidth(): number {
 		const actions = this.config?.action ?? [];
-		// ถ้า Dev กำหนด width รวมไว้ใน type:'action' column
 		const actionCol = this.config.columns.find(c => c.type === 'action');
 		if (actionCol?.width) return actionCol.width;
-		// คำนวณจาก action แต่ละตัว
 		return actions.reduce((sum, a) => sum + (a.width ?? 40), 0) + 16;
 	}
 
@@ -101,7 +101,6 @@ export class DatatableComponent implements OnInit, OnChanges {
     if (!this.config?.url) return;
 
     this.isLoading = true;
-    this.subscription?.unsubscribe();
 
     const orderBy: Record<string, string> = {};
     if (this.sortField) {
@@ -126,7 +125,7 @@ export class DatatableComponent implements OnInit, OnChanges {
 			params['limit'] = this.config.scrollLimitsRow;
 		}
 
-    this.http.post<any>(this.config.url, params).subscribe({
+    this.subs.sink = this.http.post<any>(this.config.url, params).subscribe({
       next: (res) => {
         if (Array.isArray(res)) {
           this.data = res;
@@ -222,6 +221,10 @@ export class DatatableComponent implements OnInit, OnChanges {
 		}
 	}
 
+	public onView(row: any): void {
+		this.datatableAction.emit({ action: 'View', row });
+	}
+
   public onEdit(row: any): void {
     this.datatableAction.emit({ action: 'Edit', row });
   }
@@ -229,6 +232,10 @@ export class DatatableComponent implements OnInit, OnChanges {
   public onDelete(row: any): void {
     this.datatableAction.emit({ action: 'Delete', row });
   }
+
+	public onApprove(row: any): void {
+		this.datatableAction.emit({ action: 'Approve', row });
+	}
 
 	public get totalPages(): number {
 		if (this.config?.getAll) return 1;
@@ -251,9 +258,4 @@ export class DatatableComponent implements OnInit, OnChanges {
     this.currentPage = 1;
     this.loadData();
   }
-
-	public ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
-  }
-
 }
